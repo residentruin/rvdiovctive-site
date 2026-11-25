@@ -649,6 +649,10 @@ function cover(r,big){
 function relSort(a,b){return L.sort==='new'?b.date.localeCompare(a.date):a.date.localeCompare(b.date)}
 function relMatch(r){if(L.type!=='all'&&r.type!==L.type)return false;if(!L.q)return true;
   const h=[r.title,r.main,r.feat,r.cat,r.genre,r.type,r.date.slice(0,4),...r.tracks.map(t=>t.a+' '+t.t+' '+t.m)].join(' ').toLowerCase();return L.q.toLowerCase().split(/\s+/).every(w=>h.includes(w))}
+function spotifyEl(r){const mm=(r.spotify||'').match(/open\.spotify\.com\/(?:intl-[a-z-]+\/)?(album|track|playlist)\/([A-Za-z0-9]+)/);
+  if(mm)return el('iframe',{src:`https://open.spotify.com/embed/${mm[1]}/${mm[2]}?theme=0`,title:'Spotify player: '+r.title,loading:'lazy',allow:'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture',style:'width:100%;height:352px;border:0;border-radius:12px'});
+  if(r.spotify)return el('a',{class:'pill',href:r.spotify,target:'_blank',rel:'noopener'},'Listen on Spotify ↗');
+  return null}
 function renderLabel(){
   stopCanvas();const m=$('#main');m.textContent='';
   const q=el('input',{type:'search',id:'lq',placeholder:'Search releases, artists, tracks, RVD numbers','aria-label':'Search releases',value:L.q});
@@ -676,7 +680,7 @@ function openRel(r){
   const desc=r.desc?el('details',{class:'note',style:'font:13px/1.5 var(--ui);color:var(--mute)'},el('summary',{style:'cursor:pointer;font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase'},'About this release'),el('p',{style:'white-space:pre-line;margin:8px 0 0',text:r.desc})):null;
   const box=el('div',{class:'rm',role:'dialog','aria-modal':'true','aria-label':r.title,onclick:e=>{if(e.target===box)go('label')}},
     el('div',{class:'card'},el('button',{class:'pill x',type:'button',onclick:()=>go('label')},'Close'),
-      el('div',{class:'art'},cover(r,true),el('div',{class:'spot'},el('span',{class:'dot',text:'▶'}),el('span',{},'Spotify player goes here on the live site. It can’t play inside this preview.'))),
+      el('div',{class:'art'},cover(r,true),spotifyEl(r)),
       el('div',{class:'info'},el('div',{class:'eyebrow',text:[r.cat,r.type,fmtDay(r.date),r.genre].filter(Boolean).join(' · ')}),el('h2',{text:r.title}),
         el('div',{class:'by',text:byLine(r)}),el('div',{style:'display:flex;gap:8px;flex-wrap:wrap'},buy),tr,desc)));
   const key=e=>{if(e.key==='Escape')go('label')};
@@ -697,10 +701,12 @@ const EVENTS_SAMPLE=[
 ];
 S.demoEv=true;
 const today=()=>new Date().toISOString().slice(0,10);
-const upcoming=()=>(S.demoEv?EVENTS_SAMPLE:[]).filter(e=>e.date>=today()).sort((a,b)=>a.date.localeCompare(b.date));
+S.EV=[];
+const upcoming=()=>(S.demoEv?EVENTS_SAMPLE:S.EV).filter(e=>e.date>=today()).sort((a,b)=>a.date.localeCompare(b.date));
 const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const evParts=e=>{const d=new Date(e.date+'T12:00:00');return{dow:DOW[d.getDay()],day:d.getDate(),mon:MO[d.getMonth()],yr:d.getFullYear()}};
 function poster(e,big){
+  if(e.flyer){const d=el('div',{class:'poster'});d.append(el('img',{src:e.flyer,alt:'Flyer: '+e.title,loading:big?'eager':'lazy',style:'width:100%;height:100%;object-fit:cover;display:block'}));return d}
   const p=evParts(e),uid='g'+e.id+(big?'b':'s');
   const lines=e.lineup.slice(0,4).map((n,i)=>`<text x="40" y="${392+i*30}" font-family="Inter Tight,system-ui" font-weight="700" font-size="22" fill="#0C0B0E">${esc(n.toUpperCase())}</text>`).join('');
   const svg=`<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Sample flyer for ${esc(e.title)}"><defs><linearGradient id="${uid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${e.hue[0]}"/><stop offset="1" stop-color="${e.hue[1]}"/></linearGradient></defs>
@@ -721,7 +727,7 @@ function paintNext(sec){
   bar.append(el('span',{class:'k',text:'Next up'}),`${p.dow} ${p.day} ${p.mon} · ${e.title} · ${e.city}`,el('span',{style:'margin-left:auto',text:'Tickets →'}));bar.hidden=false;
 }
 STATS.events=()=>{const up=upcoming();return[el('div',{},el('b',{text:String(up.length)}),'upcoming'),el('div',{},el('b',{text:String(S.E.length)}),'past nights')]};
-function tixBtn(e){return el('a',{class:'pill buy',href:e.tickets,onclick:ev=>{if(e.tickets==='#'){ev.preventDefault();toast('Sample event: the ticket link goes here (RA, Dice, Eventbrite…)')}}},'Get tickets ↗')}
+function tixBtn(e){if(!e.tickets)return el('span',{class:'pill','aria-disabled':'true'},'Tickets soon');return el('a',{class:'pill buy',href:e.tickets,target:e.tickets==='#'?null:'_blank',rel:'noopener',onclick:ev=>{if(e.tickets==='#'){ev.preventDefault();toast('Sample event: the ticket link goes here (RA, Dice, Eventbrite…)')}}},'Get tickets ↗')}
 function renderEvents(){
   stopCanvas();const m=$('#main');m.textContent='';const up=upcoming();
   if(!up.length){m.append(el('div',{class:'evempty'},el('img',{src:FISH_W,alt:''}),el('h2',{text:'Nothing on the calendar right now'}),
@@ -729,13 +735,13 @@ function renderEvents(){
     el('div',{style:'display:flex;gap:8px;justify-content:center;flex-wrap:wrap'},el('a',{class:'pill',href:'#grid'},'Browse the photos'),el('span',{class:'pill','aria-disabled':'true'},'@rvdiovctive'))));
     return}
   const [e,...rest]=up,p=evParts(e);
-  m.append(el('div',{class:'evhero'},poster(e,true),el('div',{},el('span',{class:'sample',text:'Sample event'}),
+  m.append(el('div',{class:'evhero'},poster(e,true),el('div',{},S.demoEv?el('span',{class:'sample',text:'Sample event'}):null,
     el('div',{class:'when'},el('b',{text:String(p.day)}),el('span',{},p.mon+' '+p.yr,el('br'),p.dow+' · '+e.doors+'–'+e.end)),
     el('h2',{text:e.title}),el('div',{class:'mono',style:'color:var(--mute)',text:[e.venue,e.city].join(' · ')}),
-    el('div',{class:'lineup'},e.lineup.map(n=>el('span',{text:n}))),el('div',{style:'display:flex;gap:8px;flex-wrap:wrap'},tixBtn(e)))));
+    el('div',{class:'lineup'},(e.lineup||[]).map(n=>el('span',{text:n}))),el('div',{style:'display:flex;gap:8px;flex-wrap:wrap'},tixBtn(e)))));
   if(rest.length){m.append(el('div',{class:'yearbreak'},el('h2',{text:'Also coming up',style:'font-size:clamp(24px,3vw,34px)'}),el('i')));
-    rest.forEach(x=>{const q=evParts(x);m.append(el('div',{class:'evrow'},poster(x),el('div',{style:'min-width:0'},el('div',{class:'d',text:`${q.dow} ${q.day} ${q.mon}`}),el('div',{class:'t',text:x.title}),el('div',{class:'m',text:[x.venue,x.city,x.lineup.join(' / ')].join(' · ')})),el('div',{class:'go'},tixBtn(x))))})}
-  m.append(el('p',{class:'note',style:'margin-top:30px',text:'Past dates drop off automatically the day after the party. One past sample is in the data and is correctly hidden.'}));
+    rest.forEach(x=>{const q=evParts(x);m.append(el('div',{class:'evrow'},poster(x),el('div',{style:'min-width:0'},el('div',{class:'d',text:`${q.dow} ${q.day} ${q.mon}`}),el('div',{class:'t',text:x.title}),el('div',{class:'m',text:[x.venue,x.city,(x.lineup||[]).join(' / ')].join(' · ')})),el('div',{class:'go'},tixBtn(x))))})}
+  if(S.demoEv)m.append(el('p',{class:'note',style:'margin-top:30px',text:'Sample events for now. Real dates come from the vault.'}));
 }
 
 /* ---------- merch (demo products; live site links out to the store) ---------- */
@@ -782,9 +788,13 @@ function prodSVG(it,ci,view){
 function prodPrint(it,ik,fish){const v=prodSVG;return it.kind==='tee'||it.kind==='cap'?`<image href="${fish}" x="166" y="112" width="68" height="72"/>`:it.kind==='tote'?`<circle cx="200" cy="236" r="70" fill="#FF5BA6"/><image href="${FISH_K}" x="164" y="198" width="72" height="76"/>`:`<text x="200" y="160" text-anchor="middle" font-family="Unbounded,Arial Black" font-weight="900" font-size="17" fill="${ik}">RVDIOVCTIVE</text>`}
 function shots(it){const out=[];it.colors.forEach((c,ci)=>{out.push([ci,0,c[0]+' · front']);if(it.kind!=='stickers'||ci===0)out.push([ci,1,c[0]+' · back'])});out.push([0,2,'Detail']);return out.slice(0,6)}
 function svgEl(html,cls){const d=el('div',cls?{class:cls}:{});d.innerHTML=html;return d.firstChild}
-STATS.merch=()=>[el('div',{},el('b',{text:String(MERCH.length)}),'items'),el('div',{},el('b',{text:'Demo'}),'for now')];
+STATS.merch=()=>[el('div',{},el('b',{text:String(MERCH.length)}),'items'),...(S.realMerch?[]:[el('div',{},el('b',{text:'Demo'}),'for now')])];
 function renderMerch(){
   stopCanvas();const m=$('#main');m.textContent='';
+  if(S.realMerch){m.append(el('div',{class:'mgrid'},MERCH.map(it=>{const sh=el('div',{class:'shot'});
+      if(it.photos[0])sh.append(el('img',{src:it.photos[0],alt:'',loading:'lazy',style:'width:100%;height:100%;object-fit:cover;display:block'}));
+      if(it.photos[1])sh.append(el('img',{class:'alt2',src:it.photos[1],alt:'',loading:'lazy',style:'width:100%;height:100%;object-fit:cover;display:block'}));
+      return el('button',{class:'prod',type:'button','aria-label':it.name,onclick:()=>go('m-'+it.id)},sh,el('div',{class:'t',text:it.name}),el('div',{class:'p'},el('span',{text:it.price||''}),el('span',{text:(it.colors||[]).join(' · ')})))})));return}
   m.append(el('p',{class:'note',style:'margin:0 0 20px',text:'Demo products. Real photos, prices and store links come from the vault later. Checkout happens on the external store.'}));
   m.append(el('div',{class:'mgrid'},MERCH.map(it=>{const sh=el('div',{class:'shot'});sh.append(svgEl(prodSVG(it,0,0)));const b=svgEl(prodSVG(it,0,1));b.classList.add('alt2');sh.append(b,el('span',{class:'demo',text:'Demo'}));
     return el('button',{class:'prod',type:'button','aria-label':it.name,onclick:()=>go('m-'+it.id)},sh,el('div',{class:'t',text:it.name}),el('div',{class:'p'},el('span',{text:it.price}),el('span',{class:'sw'},it.colors.map(c=>el('i',{title:c[0],style:'background:'+c[1]})))))})));
@@ -792,7 +802,21 @@ function renderMerch(){
 let MM=null;
 function closeMerch(){if(!MM)return;MM.box.remove();document.removeEventListener('keydown',MM.key);document.body.style.overflow='';MM=null}
 function openMerch(it){
-  closeMerch();const list=shots(it);let cur=0;
+  closeMerch();
+  if(S.realMerch){let cur=0;const ph=it.photos.length?it.photos:[''];const main=el('div',{class:'main'}),th=el('div',{class:'thumbs'});
+    const show=i=>{cur=i;main.textContent='';if(ph[i])main.append(el('img',{src:ph[i],alt:it.name,style:'width:100%;height:100%;object-fit:cover;display:block'}));th.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-pressed',String(j===i)))};
+    if(ph.length>1)ph.forEach((u,i)=>{const b=el('button',{type:'button','aria-label':'Photo '+(i+1),onclick:()=>show(i)},el('img',{src:u,alt:'',style:'width:100%;height:100%;object-fit:cover;display:block'}));th.append(b)});
+    const buy=it.link?el('a',{class:'pill buy',href:it.link,target:'_blank',rel:'noopener'},'Buy on our store ↗'):el('span',{class:'pill','aria-disabled':'true'},'Coming soon');
+    const box=el('div',{class:'rm mm',role:'dialog','aria-modal':'true','aria-label':it.name,onclick:e=>{if(e.target===box)go('merch')}},
+      el('div',{class:'card'},el('button',{class:'pill x',type:'button',onclick:()=>go('merch')},'Close'),
+        el('div',{class:'art'},el('div',{class:'gal'},main,ph.length>1?th:null)),
+        el('div',{class:'info'},el('h2',{text:it.name}),it.price?el('div',{class:'price',text:it.price}):null,
+          it.desc?el('p',{style:'margin:0;color:var(--mute);white-space:pre-line',text:it.desc}):null,
+          (it.colors||[]).length?el('div',{},el('div',{class:'h3',text:'Colors'}),el('div',{class:'opts'},it.colors.map(c=>el('span',{text:c})))):null,
+          (it.sizes||[]).length?el('div',{},el('div',{class:'h3',text:'Sizes'}),el('div',{class:'opts'},it.sizes.map(z=>el('span',{text:z})))):null,
+          el('div',{style:'display:flex;gap:8px;flex-wrap:wrap'},buy),el('div',{class:'note',text:'Sizes and checkout are handled on the store.'}))));
+    const key=e=>{if(e.key==='Escape')go('merch');else if(e.key==='ArrowRight')show((cur+1)%ph.length);else if(e.key==='ArrowLeft')show((cur-1+ph.length)%ph.length)};
+    document.addEventListener('keydown',key);document.body.append(box);document.body.style.overflow='hidden';MM={box,key};show(0);box.querySelector('.x').focus();return}const list=shots(it);let cur=0;
   const main=el('div',{class:'main'}),th=el('div',{class:'thumbs'});
   const show=i=>{cur=i;main.innerHTML=prodSVG(it,list[i][0],list[i][1]);th.querySelectorAll('button').forEach((b,j)=>b.setAttribute('aria-pressed',String(j===i)))};
   list.forEach(([ci,v,lab],i)=>{const b=el('button',{type:'button','aria-label':lab,title:lab,onclick:()=>show(i)});b.innerHTML=prodSVG(it,ci,v);th.append(b)});
@@ -864,7 +888,7 @@ function homeA3(box){
   const fill=k=>{tiles.forEach((im,i)=>{HOME_T.push(setTimeout(()=>{
     if(k==='photos')urlOf('ts',S.P[(i*7+Math.floor(Math.random()*9))%S.P.length]).then(u=>im.src=u).catch(()=>{});
     else if(k==='label'){const r=REL.filter(r=>r.art);im.src=r[i%r.length].art}
-    else if(k==='merch')im.src=svgURL(prodSVG(MERCH[i%MERCH.length],i%MERCH[i%MERCH.length].colors.length,i%2));
+    else if(k==='merch'){const it=MERCH[i%MERCH.length];im.src=S.realMerch?(it.photos[i%Math.max(1,it.photos.length)]||fUrl(fl[i%fl.length].id)):svgURL(prodSVG(it,i%it.colors.length,i%2))}
     else im.src=fUrl(fl[i%fl.length].id)},i*14))})};
   liqDefs();
   const reduce=RM_.matches;
@@ -881,6 +905,8 @@ function homeA3(box){
 /* ---------- boot ---------- */
 (async()=>{
   try{[S.E,REL]=await Promise.all([fetch('data.json').then(r=>r.json()),fetch('rel.json').then(r=>r.json())])}catch{S.E=S.E||[];REL=REL||[]}
+  try{const r=await fetch('events.json',{cache:'no-cache'});if(r.ok){S.EV=await r.json();S.demoEv=false}}catch{}
+  try{const r=await fetch('merch.json',{cache:'no-cache'});if(r.ok){const mj=await r.json();if(mj.length){MERCH.splice(0,MERCH.length,...mj);S.realMerch=true}}}catch{}
   S.E.sort((a,b)=>b.date.localeCompare(a.date));
   S.P=S.E.flatMap(e=>e.photos.map(p=>({...p,e})));
   const years=[...new Set(S.E.map(e=>e.year))].sort().reverse();
