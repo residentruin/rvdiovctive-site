@@ -30,8 +30,6 @@ button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;paddin
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .mono{font-family:var(--mono)}
-.proto{font:11.5px var(--mono);color:var(--mute);border-bottom:1px solid var(--line);padding-block:7px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.proto b{color:var(--accent);font-weight:500}
 
 header.mast{padding-block:28px 18px;display:flex;align-items:end;justify-content:space-between;gap:20px;flex-wrap:wrap}
 .word{font:900 clamp(30px,6.4vw,78px)/.9 var(--display);letter-spacing:-.01em;margin:0}
@@ -212,8 +210,6 @@ main{padding-block:18px 60px;min-height:60vh}
 .nextbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:9px;background:var(--accent);color:#120a10;font-size:14px;font-weight:600;text-decoration:none}
 .nextbar .k{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;border:1px solid #120a1055;border-radius:999px;padding:2px 9px}
 .nextbar:hover{filter:brightness(1.05)}
-.proto button.tg{border:1px solid var(--line);border-radius:999px;padding:1px 9px;font:11px var(--mono);color:var(--ink);margin-left:6px}
-.proto button.tg[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#120a10}
 .evhero{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:34px;align-items:center;margin:8px 0 40px}
 .poster{aspect-ratio:4/5;width:100%;border-radius:4px;overflow:hidden;box-shadow:0 24px 70px #000c}
 .poster svg{width:100%;height:100%;display:block}
@@ -263,7 +259,7 @@ body.home header.mast,body.home #bar,body.home footer,body.home #main,body.home 
 #home{position:relative}
 /* landing type */
 @media (prefers-reduced-motion:reduce){.ha-marq span{animation:none!important}}
-.ha{position:relative;min-height:calc(100dvh - 34px);overflow:hidden;background:#0A090C;color:#F2EEE6;display:flex;flex-direction:column;justify-content:space-between;gap:20px}
+.ha{position:relative;min-height:100dvh;overflow:hidden;background:#0A090C;color:#F2EEE6;display:flex;flex-direction:column;justify-content:space-between;gap:20px}
 .ha-row{position:relative;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;padding-block:18px 0;font:500 11.5px var(--mono);letter-spacing:.2em;text-transform:uppercase}
 .ha-row a{color:inherit;text-decoration:none}
 .ha-wm{font:900 22px/1 'Big Shoulders Display',Impact,sans-serif;letter-spacing:.06em}
@@ -380,7 +376,6 @@ body.evp header.mast{min-height:0;padding-block:26px 14px}body.evp .word{font-si
 </style>
 </head>
 <body>
-<div class="proto gut"><span><b>Prototype</b> · design mockup of the public site · photos from the vault · label data from LabelWorx · events &amp; merch are samples</span><span>Sample events<button class="tg" id="demoEv" type="button" aria-pressed="true">On</button></span></div>
 <div id="home" hidden></div>
 <a class="nextbar gut" id="nextbar" hidden></a>
 <header class="mast gut">
@@ -732,7 +727,7 @@ function renderEvents(){
   if(!up.length){m.append(el('div',{class:'evempty'},el('img',{src:FISH_W,alt:''}),el('h2',{text:'Nothing on the calendar right now'}),
     el('p',{style:'color:var(--mute);margin:0 0 18px',text:'New dates get announced on Instagram first. In the meantime, dig through 10+ years of nights in the photo archive.'}),
     el('div',{style:'display:flex;gap:8px;justify-content:center;flex-wrap:wrap'},el('a',{class:'pill',href:'#grid'},'Browse the photos'),el('span',{class:'pill','aria-disabled':'true'},'@rvdiovctive'))));
-    m.append(el('p',{class:'note',style:'text-align:center',text:'On the live site, the Events tab hides itself when this page would be empty. Turn sample events back on at the top of the page.'}));return}
+    return}
   const [e,...rest]=up,p=evParts(e);
   m.append(el('div',{class:'evhero'},poster(e,true),el('div',{},el('span',{class:'sample',text:'Sample event'}),
     el('div',{class:'when'},el('b',{text:String(p.day)}),el('span',{},p.mon+' '+p.yr,el('br'),p.dow+' · '+e.doors+'–'+e.end)),
@@ -900,7 +895,6 @@ function homeA3(box){
   addEventListener('hashchange',()=>{if(!location.hash.startsWith('#e-'))document.title='RVDIOVCTIVE Archive';route()});
   document.querySelector('.word .wm').onclick=()=>go('home');
   liqDefs();mastWall();document.body.append(CGLOW);
-  $('#demoEv').onclick=e=>{S.demoEv=!S.demoEv;e.currentTarget.setAttribute('aria-pressed',String(S.demoEv));e.currentTarget.textContent=S.demoEv?'On':'Off';route()};
   route();
 })();
 </script>
