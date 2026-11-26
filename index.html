@@ -375,7 +375,7 @@ body.home .smarq{display:none!important}
 .lineup{font:700 26px/1.1 var(--display);text-transform:uppercase;letter-spacing:.03em}
 .evrow .d{font:900 22px/1 var(--display)}
 .evrow .poster{border:3px solid var(--paper);border-radius:0;transform:rotate(-2deg)}
-.evempty h2{font:900 clamp(40px,5vw,60px)/.9 var(--display);text-transform:uppercase}
+.evempty h2{font:900 clamp(56px,9vw,110px)/.85 var(--display);text-transform:uppercase}
 .shot{transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .3s}
 .prod:hover .shot{transform:rotate(-1deg);box-shadow:-3px 0 #FF4FA3,3px 0 var(--teal)}
 .price{font:900 40px/1 var(--display)}
@@ -564,7 +564,7 @@ function route(){
   document.body.classList.remove('home','evp');$('#home').hidden=true;stopHome();
   if(!h.startsWith('m-'))closeMerch();
   if(h==='flyers'){location.replace('#past');return}
-  if(h==='events'||h==='past'){closeLB();closeRel();section('events');S.view='events';S.evTab=h==='past'?'past':'up';if(h==='past')S.last='past';renderEvents();window.scrollTo(0,0);return}
+  if(h==='events'||h==='past'||h==='upcoming'){closeLB();closeRel();section('events');S.view='events';S.evTab=h==='past'||(h==='events'&&!upcoming().length)?'past':'up';if(S.evTab==='past')S.last='past';renderEvents();window.scrollTo(0,0);return}
   if(h==='merch'||h.startsWith('m-')){closeLB();closeRel();section('merch');S.view='merch';renderMerch();const it=h.startsWith('m-')&&MERCH.find(x=>x.id===h.slice(2));if(it)openMerch(it);else closeMerch();return}
   if(h==='label'||h.startsWith('r-')){closeLB();section('label');S.view='label';renderLabel();const r=h.startsWith('r-')&&REL.find(x=>x.id===h.slice(2));if(r)openRel(r);else closeRel();return}
   closeRel();section('photos');
@@ -885,11 +885,11 @@ function tixBtn(e){if(!e.tickets)return el('span',{class:'pill','aria-disabled':
 function renderEvents(){
   stopCanvas();const m=$('#main');m.textContent='';const up=upcoming();
   const tab=S.evTab==='past'?'past':'up';
-  m.append(el('div',{class:'evtabs'},el('div',{class:'views',role:'group','aria-label':'Events'},el('a',{href:'#events','aria-current':tab==='up'?'page':null},'Upcoming'),el('a',{href:'#past','aria-current':tab==='past'?'page':null},'Past events')),
+  m.append(el('div',{class:'evtabs'},el('div',{class:'views',role:'group','aria-label':'Events'},el('a',{href:'#upcoming','aria-current':tab==='up'?'page':null},'Upcoming'),el('a',{href:'#past','aria-current':tab==='past'?'page':null},'Past events')),
     LINKS.ra?el('a',{class:'pill soc',href:LINKS.ra,target:'_blank',rel:'noopener'},ICON.ra(),'Resident Advisor ↗'):null));
   if(tab==='past'){renderPast(m);return}
-  if(!up.length){m.append(el('div',{class:'evempty'},el('img',{src:FISH_W,alt:''}),el('h2',{text:'Nothing on the calendar right now'}),
-    el('p',{style:'color:var(--mute);margin:0 0 18px',text:'New dates get announced on Instagram first. In the meantime, look back through every flyer since 2012.'}),
+  if(!up.length){m.append(el('div',{class:'evempty'},el('img',{src:FISH_W,alt:''}),el('h2',{class:'liq fringe',text:'Check back soon'}),
+    el('p',{style:'color:var(--mute);margin:0 0 18px',text:'Nothing on the calendar right now. New dates hit Instagram first. Until then, look back through every flyer since 2012.'}),
     el('div',{style:'display:flex;gap:8px;justify-content:center;flex-wrap:wrap'},el('a',{class:'pill',href:'#past'},'See past events'),LINKS.instagram?el('a',{class:'pill',href:LINKS.instagram,target:'_blank',rel:'noopener'},'@rvdiovctive ↗'):null)));
     return}
   const [e,...rest]=up,p=evParts(e);
@@ -998,7 +998,7 @@ let HOME_T=[];
 function stopHome(){HOME_T.forEach(t=>{clearInterval(t);clearTimeout(t)});HOME_T=[];document.removeEventListener('keydown',homeKey)}
 let homeKey=()=>{};
 function homeItems(){const up=upcoming(),n=up[0],np=n&&evParts(n);
-  return[{k:'events',label:'Events',href:n?'#events':'#past',count:n?`next: ${np.day} ${np.mon}`:'past flyers',line:n?`Next: ${np.dow} ${np.day} ${np.mon}, ${n.title}, ${n.city}.`:'Every flyer since 2012.',col:'#F4D03F'},
+  return[{k:'events',label:'Events',href:'#events',count:n?`next: ${np.day} ${np.mon}`:'past flyers',line:n?`Next: ${np.dow} ${np.day} ${np.mon}, ${n.title}, ${n.city}.`:'Every flyer since 2012.',col:'#F4D03F'},
    {k:'label',label:'Label',href:'#label',count:`${REL.length} releases`,line:`RVD001 to ${REL[REL.length-1].cat}. House, techno and everything between, since 2022.`,col:'#3F7FE0'},
    {k:'photos',label:'Photos',href:'#grid',count:'since 2013',line:'Brooklyn, Miami and beyond.',col:'#F05AA6'},
    {k:'merch',label:'Merch',href:'#merch',count:`${MERCH.length} items`,line:'Tees, hoodies, totes and stickers from our online store.',col:'#45C97B'}]}
