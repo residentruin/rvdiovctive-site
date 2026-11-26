@@ -422,6 +422,9 @@ footer .frow{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .mapwrap.sel .pin:not([aria-pressed="true"]){opacity:.55}
 .pin.lft .lab{left:auto;right:calc(50% + 10px);bottom:auto;top:50%;transform:translateY(-50%) rotate(var(--rt,-3deg))}
 .pin.upl .lab{left:auto;right:-6px;transform:rotate(var(--rt,-3deg));text-align:right}
+.pin.bos .lab{left:calc(50% + 10px);bottom:auto;top:50%;transform:translateY(-50%) rotate(var(--rt,-3deg))}
+@media (max-width:1260px){.pin.bos .lab{left:auto;right:-6px;top:auto;bottom:calc(100% + 8px);transform:rotate(var(--rt,-3deg))}.pin.bos .lab small{display:none}}
+#main{overflow-x:clip}
 .pin.rgt .lab{left:calc(50% + 10px);bottom:auto;top:50%;transform:translateY(-50%) rotate(var(--rt,-3deg))}
 .citymenu{display:flex;flex-wrap:wrap;gap:4px 18px;margin:26px 0 8px}
 .citymenu button{font:900 clamp(30px,5vw,64px)/.9 var(--display);text-transform:uppercase;color:transparent;-webkit-text-stroke:1.2px var(--cream);padding:.06em .14em 0;display:inline-flex;align-items:flex-start;gap:.15em;transition:color .15s,background .15s}
@@ -439,7 +442,7 @@ footer .frow{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .flystrip button:hover{transform:rotate(0) scale(1.05)}
 .flystrip img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}
 .flystrip .cap{display:block;font:700 13px/1.05 var(--display);text-transform:uppercase;color:#0A090C;padding:6px 2px 2px;text-align:left}
-@media (max-width:640px){.pin .lab{font-size:15px}.pin .lab small{display:none}.pin .ring{inset:-9px}.flystrip button{width:104px}}
+@media (max-width:640px){.pin.bos .lab{left:auto;right:-6px;top:auto;bottom:calc(100% + 8px);transform:rotate(var(--rt,-3deg))}.pin .lab{font-size:15px}.pin .lab small{display:none}.pin .ring{inset:-9px}.flystrip button{width:104px}}
 body.evp header.mast{min-height:0;padding-block:26px 14px}body.evp .word{font-size:clamp(44px,6vw,84px)}body.evp .word span{display:none}
 </style>
 </head>
@@ -532,11 +535,13 @@ const CITIES=[
  {k:'newyork',label:'New York',sub:'Brooklyn & Manhattan',x:870.7,y:215.8,cls:'upl',rt:'-3deg'},
  {k:'miami',label:'Miami',sub:'Miami Music Week & more',x:822.7,y:572.1,cls:'lft',rt:'2deg'},
  {k:'california',label:'California',sub:'LA, SF & the desert',x:86.9,y:363.2,cls:'rgt',rt:'-2deg'},
+ {k:'boston',label:'Boston',sub:'Massachusetts',x:908.7,y:167.1,cls:'bos',rt:'2deg'},
+ {k:'minneapolis',label:'Minneapolis',sub:'Minnesota',x:541.8,y:161,cls:'',rt:'-2deg'},
  {k:'midwest',label:'Midwest',sub:'Chicago · Detroit · Cleveland',x:690,y:214,cls:'lft',rt:'3deg'}];
-const CITY_BY_NIGHT={'rvd-output17':['newyork'],'rvd-bristol16':['miami'],'rvd-road2camp22':['midwest'],'rvd-westcoast17':['california']};
+const CITY_BY_NIGHT={'rvd-road2camp22':['midwest'],'rvd-westcoast17':['california']};
 const cityCache=new Map();
 function cityKeys(e){if(cityCache.has(e.id))return cityCache.get(e.id);let k=CITY_BY_NIGHT[e.id];
-  if(!k){const c=(e.city||'').toLowerCase();k=/miami/.test(c)?['miami']:/new york|brooklyn|queens|manhattan/.test(c)?['newyork']:/california|los angeles|san francisco/.test(c)?['california']:/chicago|detroit|cleveland/.test(c)?['midwest']:[]}
+  if(!k){const c=(e.city||'').toLowerCase();k=/miami/.test(c)?['miami']:/new york|brooklyn|queens|manhattan/.test(c)?['newyork']:/california|los angeles|san francisco/.test(c)?['california']:/chicago|detroit|cleveland/.test(c)?['midwest']:/minneapolis/.test(c)?['minneapolis']:/boston/.test(c)?['boston']:[]}
   cityCache.set(e.id,k);return k}
 const cityOf=k=>CITIES.find(c=>c.k===k);
 let MAPSVG=null;
@@ -551,7 +556,7 @@ function renderMap(m){
       el('span',{class:'ring'}),el('span',{class:'dot',style:`width:${sz}px;height:${sz}px`}),el('span',{class:'lab'},c.label,el('small',{text:`${c.n.length} night${c.n.length>1?'s':''}`}))))});
   m.append(el('div',{class:'citymenu',role:'group','aria-label':'Cities'},live.sort((a,b)=>b.n.length-a.n.length).map(c=>el('button',{type:'button','aria-pressed':String(S.mapCity===c.k),onclick:()=>pickCity(c.k)},c.label,el('sup',{text:String(c.n.length)})))));
   const off=S.E.filter(e=>!cityKeys(e).length&&evOK(e)).length;
-  if(off)m.append(el('p',{class:'mapnote',text:`${off} more night${off>1?'s':''} aren’t pinned yet because we don’t know the city. Find them in Grid or Years.`}));
+  if(off)m.append(el('p',{class:'mapnote',text:off>1?`${off} more nights aren’t pinned yet because we don’t know the city. Find them in Grid or Years.`:'One more night isn’t pinned yet because we don’t know the city. Find it in Grid or Years.'}));
   if(!live.length){m.append(el('p',{class:'empty',text:'No nights match. Clear the filters to see the map.'}));return}
   const c=S.mapCity&&live.find(x=>x.k===S.mapCity);if(!c)return;
   const ns=c.n,ph=ns.flatMap(e=>e.photos.map(p=>S.P.find(x=>x.c===p.c))).filter(Boolean),yrs=ns.map(e=>e.year).sort();
