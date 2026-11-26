@@ -1033,22 +1033,27 @@ const CGLOW=el('div',{class:'cglow','aria-hidden':'true'});
    if(gx!=null)liqKick(Math.hypot(e.clientX-gx,e.clientY-gy)*.25);gx=e.clientX;gy=e.clientY},{passive:true});
  document.addEventListener('pointerleave',()=>CGLOW.classList.remove('on'));
  addEventListener('scroll',()=>{liqKick(Math.abs(scrollY-gs)*(S.view==='home'?.6:.25));gs=scrollY},{passive:true});}
+/* landing wall: flyers pinned in the vault (wall.json) first, topped up with nights' flyers so the wall never looks thin */
+S.WALL=[];
+function wallSrcs(){const out=[...S.WALL];const night=S.E.filter(e=>e.flyer).map(e=>fUrl(e.id));
+  if(out.length<30)for(const u of night){if(out.length>=30)break;if(!out.includes(u))out.push(u)}
+  return out.length?out:night}
 /* the blurred flyer wall behind the masthead on the inner pages */
 function mastWall(){const h=$('header.mast'),fl=S.E.filter(e=>e.flyer);if(!h||!fl.length||h.querySelector('.mwall'))return;
   const w=el('div',{class:'mwall','aria-hidden':'true'});
-  for(let i=0;i<48;i++)w.append(el('div',{class:'ptile',style:`--r:${((i*37)%9-4)}deg;--t:${((i*53)%11-5)}deg`},el('img',{alt:'',src:fUrl(fl[(i*5)%fl.length].id),loading:'lazy'})));
+  const ws=wallSrcs();for(let i=0;i<48;i++)w.append(el('div',{class:'ptile',style:`--r:${((i*37)%9-4)}deg;--t:${((i*53)%11-5)}deg`},el('img',{alt:'',src:ws[(i*5)%ws.length],loading:'lazy'})));
   h.prepend(w);
   h.addEventListener('pointermove',e=>{if(RM_.matches)return;const r=h.getBoundingClientRect();w.style.setProperty('--wx',((.5-(e.clientX-r.left)/r.width)*24).toFixed(1)+'px');w.style.setProperty('--wy',((.5-(e.clientY-r.top)/r.height)*14).toFixed(1)+'px')})}
 
 /* landing: a wheat-pasted wall of real flyers fills the screen; the big words melt when the cursor moves fast or you scroll */
 function homeA3(box){
-  const fl=S.E.filter(e=>e.flyer),N=64,wall=el('div',{class:'wall'}),tiles=[];
-  for(let i=0;i<N;i++){const im=el('img',{alt:'',src:fUrl(fl[i%fl.length].id),loading:'lazy'});const t=el('div',{class:'ptile',style:`--r:${((i*37)%9-4)}deg;--t:${((i*53)%11-5)}deg`},im);tiles.push(im);wall.append(t)}
+  const fl=S.E.filter(e=>e.flyer),ws=wallSrcs(),N=64,wall=el('div',{class:'wall'}),tiles=[];
+  for(let i=0;i<N;i++){const im=el('img',{alt:'',src:ws[i%ws.length],loading:'lazy'});const t=el('div',{class:'ptile',style:`--r:${((i*37)%9-4)}deg;--t:${((i*53)%11-5)}deg`},im);tiles.push(im);wall.append(t)}
   const fill=k=>{tiles.forEach((im,i)=>{HOME_T.push(setTimeout(()=>{
     if(k==='photos')urlOf('ts',S.P[(i*7+Math.floor(Math.random()*9))%S.P.length]).then(u=>im.src=u).catch(()=>{});
     else if(k==='label'){const r=REL.filter(r=>r.art);im.src=r[i%r.length].art}
     else if(k==='merch'){const it=MERCH[i%MERCH.length];im.src=S.realMerch?(it.photos[i%Math.max(1,it.photos.length)]||fUrl(fl[i%fl.length].id)):svgURL(prodSVG(it,i%it.colors.length,i%2))}
-    else im.src=fUrl(fl[i%fl.length].id)},i*14))})};
+    else im.src=ws[i%ws.length]},i*14))})};
   liqDefs();
   const reduce=RM_.matches;
   const wrap=el('div',{class:'ha a3'});
@@ -1076,8 +1081,9 @@ function liftLoader(){const l=$('#loader');if(!l)return;const wait=Math.max(0,11
   await Promise.all([
     ld('a',Promise.all([fetch('data.json').then(r=>r.json()),fetch('rel.json').then(r=>r.json())]).then(([e,r])=>{S.E=e;REL=r}).catch(()=>{S.E=S.E||[];REL=REL||[]})),
     ld('a',fetch('events.json',{cache:'no-cache'}).then(async r=>{if(r.ok){S.EV=await r.json();S.demoEv=false}})),
+    ld('a',fetch('wall.json',{cache:'no-cache'}).then(async r=>{if(r.ok){const w=await r.json();if(Array.isArray(w))S.WALL=w}})),
     ld('a',fetch('merch.json',{cache:'no-cache'}).then(async r=>{if(r.ok){const mj=await r.json();if(mj.length){MERCH.splice(0,MERCH.length,...mj);S.realMerch=true}}}))]);
-  const pre=[fonts,...S.E.filter(e=>e.flyer).map(e=>ld('b',imgLoad(fUrl(e.id))))];
+  const pre=[fonts,...wallSrcs().map(u=>ld('b',imgLoad(u)))];
   LD.bOn=true;ldPaint();
   await Promise.race([Promise.all(pre),new Promise(r=>setTimeout(r,9000))]);
   S.E.sort((a,b)=>b.date.localeCompare(a.date));
