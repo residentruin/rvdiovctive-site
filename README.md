@@ -14,13 +14,17 @@ It's a static site with no build step. Open `index.html` through any web server 
 | `tp/`, `lp/` | Photos, packed one file per night (`tp` = grid size, `lp` = large) |
 | `rel/` | Release artwork |
 
+## Social links
+
+The Instagram, Beatport and Resident Advisor links live in one place near the top of the script in `index.html` (`const LINKS`). Leave one empty and its icon disappears.
+
 ## Still to do before launch
 
 - Final photo selection from the Photo Vault (replaces `data.json`, `tp/`, `lp/`)
 - Missing label artwork and Beatport links
 - Real events (the three upcoming parties are samples, toggled in the top bar)
 - Real merch photos, prices and store links (currently demo items)
-- Remove the "Prototype" bar and the `noindex` line in `index.html`
+- Remove the `noindex` line in `index.html`, and switch the preview-image URLs to the real domain
 
 ## Preview locally
 
