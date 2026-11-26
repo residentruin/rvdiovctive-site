@@ -372,6 +372,74 @@ footer .fword{font:900 clamp(70px,19vw,300px)/.8 var(--display);color:transparen
 footer .frow{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 @media (max-width:700px){header.mast{min-height:0;padding-block:30px 16px}.stats b{font-size:30px}.yt{font-size:21px}.list .yr td{font-size:38px}}
 @media (hover:none){.cglow{display:none}}
+/* bar: view tabs + filter pop-out */
+.bar{position:sticky}
+.bar .in{flex-wrap:nowrap;justify-content:space-between;gap:10px}
+.views{flex:0 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none}
+.views button{padding:8px 16px;white-space:nowrap}
+.fbtn{flex:none;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:8px 14px;font:700 16px/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--cream)}
+.fbtn:hover,.fbtn[aria-expanded="true"]{background:var(--cream);color:#0A090C;border-color:var(--cream)}
+.fbtn i{font:700 11px/1 var(--mono);font-style:normal;background:var(--accent);color:#120a10;border-radius:999px;padding:3px 6px;letter-spacing:0}
+.fchips{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:10px;margin-top:-2px}
+.fchips button{font:12px var(--mono);border:1px solid #F2EEE644;border-radius:999px;padding:4px 10px;color:var(--cream)}
+.fchips button:hover{background:var(--cream);color:#0A090C}
+.fpanel{position:absolute;right:max(16px,env(safe-area-inset-right,0px));top:calc(100% + 8px);width:min(420px,calc(100vw - 32px));max-height:min(70vh,620px);overflow:auto;background:#141218;border:1px solid #F2EEE633;border-radius:12px;box-shadow:0 30px 80px #000c;padding:18px;display:flex;flex-direction:column;gap:16px;z-index:45}
+.fpanel h4{margin:0;font:500 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.fpanel .fsrch{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:0 14px}
+.fpanel .fsrch input{flex:1;min-width:0;background:none;border:0;color:var(--ink);font:16px var(--ui);padding:10px 0;outline:none}
+.fpanel .fch{display:flex;gap:6px;flex-wrap:wrap}
+.fpanel .fch button{font:700 15px/1 var(--display);letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:7px 12px;color:var(--cream)}
+.fpanel .fch button[aria-pressed="true"]{background:var(--cream);color:#0A090C;border-color:var(--cream)}
+.fpanel .ftog{display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer}
+.fpanel .ftog input{accent-color:var(--accent);width:18px;height:18px}
+.fpanel .fact{display:flex;justify-content:space-between;gap:10px;position:sticky;bottom:-18px;background:#141218;padding:10px 0 2px;margin-top:-6px}
+.fscrim{position:fixed;inset:0;z-index:39;background:#0008}
+@media (max-width:640px){
+  .fpanel{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;max-height:78vh;border-radius:16px 16px 0 0;padding:20px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+  .views button{padding:8px 12px;font-size:15px}
+  .fbtn{padding:8px 11px}.fbtn span{display:none}
+  .word span{font-size:11px;letter-spacing:.14em}}
+/* map */
+.mapwrap{position:relative;max-width:1100px;margin:6px auto 0}
+.mapsvg{position:relative;aspect-ratio:975/610;width:100%}
+.mapsvg svg{width:100%;height:100%;display:block;overflow:visible}
+.mapsvg .dots{opacity:.34}
+.mapsvg pattern rect{fill:#F2EEE6}
+#cityview{scroll-margin-top:70px}
+.mapsvg .st{stroke:#F2EEE6;stroke-opacity:.12;stroke-width:.8}
+.mapsvg .ol{stroke:#F2EEE6;stroke-opacity:.35;stroke-width:1}
+.mapsvg .dots,.mapsvg .st,.mapsvg .ol{transition:opacity .4s}
+.mapwrap.sel .mapsvg .dots{opacity:.2}
+.pin{position:absolute;transform:translate(-50%,-50%);display:block;padding:0;border:0;background:none;cursor:pointer;z-index:2}
+.pin .dot{display:block;border-radius:50%;background:var(--accent);box-shadow:0 0 0 6px #FF5BA633,0 0 30px 6px #FF5BA688;transition:transform .3s}
+.pin .ring{position:absolute;inset:-14px;border:1.5px solid #FF5BA6aa;border-radius:50%;animation:pinring 2.4s ease-out infinite}
+@keyframes pinring{from{transform:scale(.4);opacity:1}to{transform:scale(1.5);opacity:0}}
+.pin .lab{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%) rotate(var(--rt,-3deg));white-space:nowrap;font:900 clamp(18px,3.4vw,40px)/.9 var(--display);text-transform:uppercase;letter-spacing:.02em;color:var(--cream);text-shadow:-2px 0 #FF4FA388,2px 0 #2EE6D688;padding:.08em .2em .02em;transition:background .15s,color .15s}
+.pin .lab small{display:block;font:500 10px var(--mono);letter-spacing:.14em;color:#F2EEE6bb;text-shadow:none;margin-top:4px}
+.pin:hover .lab,.pin:focus-visible .lab,.pin[aria-pressed="true"] .lab{background:var(--cream);color:#0A090C;text-shadow:none}
+.pin:hover .lab small,.pin[aria-pressed="true"] .lab small{color:#0A090Caa}
+.pin:hover .dot,.pin[aria-pressed="true"] .dot{transform:scale(1.35)}
+.mapwrap.sel .pin:not([aria-pressed="true"]){opacity:.55}
+.pin.lft .lab{left:auto;right:calc(50% + 10px);bottom:auto;top:50%;transform:translateY(-50%) rotate(var(--rt,-3deg))}
+.pin.upl .lab{left:auto;right:-6px;transform:rotate(var(--rt,-3deg));text-align:right}
+.pin.rgt .lab{left:calc(50% + 10px);bottom:auto;top:50%;transform:translateY(-50%) rotate(var(--rt,-3deg))}
+.citymenu{display:flex;flex-wrap:wrap;gap:4px 18px;margin:26px 0 8px}
+.citymenu button{font:900 clamp(30px,5vw,64px)/.9 var(--display);text-transform:uppercase;color:transparent;-webkit-text-stroke:1.2px var(--cream);padding:.06em .14em 0;display:inline-flex;align-items:flex-start;gap:.15em;transition:color .15s,background .15s}
+.citymenu button sup{font:500 11px var(--mono);letter-spacing:.12em;-webkit-text-stroke:0;color:var(--mute);margin-top:.6em}
+.citymenu button:hover{color:var(--cream)}
+.citymenu button[aria-pressed="true"]{background:var(--cream);color:#0A090C;-webkit-text-stroke:0;transform:skewX(-6deg)}
+.citymenu button[aria-pressed="true"] sup{color:#0A090Caa}
+.mapnote{font:12px var(--mono);color:var(--mute);margin:4px 0 0}
+.cityhead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:40px 0 18px;padding-top:26px;border-top:1px solid var(--line)}
+.cityhead h2{font:900 clamp(70px,13vw,190px)/.8 var(--display);text-transform:uppercase;margin:0;filter:url(#liq);text-shadow:-3px 0 #FF4FA388,3px 0 #2EE6D688}
+.cityhead p{margin:0;font:12.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.flystrip{display:flex;gap:18px;overflow-x:auto;padding:14px 4px 22px;scrollbar-width:thin}
+.flystrip button{flex:none;width:130px;background:var(--paper);padding:4px;box-shadow:0 8px 18px #000a;transform:rotate(var(--r,-2deg));transition:transform .3s}
+.flystrip button:nth-child(even){--r:2deg}
+.flystrip button:hover{transform:rotate(0) scale(1.05)}
+.flystrip img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}
+.flystrip .cap{display:block;font:700 13px/1.05 var(--display);text-transform:uppercase;color:#0A090C;padding:6px 2px 2px;text-align:left}
+@media (max-width:640px){.pin .lab{font-size:15px}.pin .lab small{display:none}.pin .ring{inset:-9px}.flystrip button{width:104px}}
 body.evp header.mast{min-height:0;padding-block:26px 14px}body.evp .word{font-size:clamp(44px,6vw,84px)}body.evp .word span{display:none}
 </style>
 </head>
@@ -381,23 +449,12 @@ body.evp header.mast{min-height:0;padding-block:26px 14px}body.evp .word{font-si
 <header class="mast gut">
   <div><h1 class="word"><b class="wm liq fringe">RVDIOVCTIVE</b><span id="tag">Photo archive · Brooklyn, Miami &amp; beyond · since 2013</span></h1>
   <nav class="sect" aria-label="Sections"><a href="#grid" data-s="photos" aria-current="page">Photos</a><a href="#events" data-s="events" id="navEv">Events</a><a href="#label" data-s="label">Label</a><a href="#merch" data-s="merch">Merch</a></nav></div>
-  <div class="stats" id="stats"></div>
 </header>
 <div class="ha-marq smarq" id="smarq" aria-hidden="true"><span></span><span></span></div>
 <div class="bar" id="bar"><div class="in gut">
-  <div class="views" role="group" aria-label="View">
-    <button data-v="grid" aria-pressed="true"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>Grid</button>
-    <button data-v="list" aria-pressed="false"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="1" y="2" width="14" height="2" rx="1"/><rect x="1" y="7" width="14" height="2" rx="1"/><rect x="1" y="12" width="14" height="2" rx="1"/></svg>List</button>
-    <button data-v="years" aria-pressed="false"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="1" y="1" width="2" height="14" rx="1"/><rect x="5" y="2" width="10" height="3" rx="1"/><rect x="5" y="7" width="7" height="3" rx="1"/><rect x="5" y="12" width="9" height="3" rx="1"/></svg>Years</button>
-    <button data-v="flyers" aria-pressed="false"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><rect x="1" y="1" width="6" height="9" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="12" width="6" height="3" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>Flyers</button>
-  </div>
-  <label class="search"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="m11 11 4 4"/></svg><input id="q" type="search" placeholder="Search events, venues, cities, artists" aria-label="Search"></label>
-  <select id="yr" aria-label="Year"><option value="">All years</option></select>
-  <div class="sub" id="gridOpts">
-    <div class="seg" role="group" aria-label="Grid style"><button data-g="scroll" aria-pressed="true">Scroll</button><button data-g="canvas" aria-pressed="false">Canvas</button></div>
-    <label id="ybWrap"><input type="checkbox" id="yb" checked> Year breaks</label>
-  </div>
-</div></div>
+  <div class="views" id="views" role="group" aria-label="View"><button data-v="grid" aria-pressed="true">Grid</button><button data-v="years" aria-pressed="false">Years</button><button data-v="flyers" aria-pressed="false">Flyers</button><button data-v="map" aria-pressed="false">Map</button></div>
+  <button class="fbtn" id="fbtn" type="button" aria-expanded="false" aria-controls="fpanel"><svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg><span>Filter</span><i id="fcount" hidden></i></button>
+</div><div class="fchips gut" id="fchips" hidden></div><div class="fpanel" id="fpanel" hidden role="dialog" aria-label="Filters"></div></div></div>
 <main class="gut" id="main"></main>
 <footer class="gut"><div class="fword" aria-hidden="true">RVDIOVCTIVE</div><div class="frow"><span>© RVDIOVCTIVE · Photos by Radskillz, Will OB, Cal McLaren, Four13 Photography and friends</span><span>Want a photo taken down? <u>Get in touch</u> (placeholder)</span></div></footer>
 
@@ -413,12 +470,12 @@ function pack(kind,id){const k=kind+id;if(!PK.has(k))PK.set(k,fetch((kind==='ts'
 function urlOf(kind,p){const k=kind+p.c;if(!URLS.has(k))URLS.set(k,pack(kind,p.e.id).then(b=>{const[o,l]=p[kind];return URL.createObjectURL(new Blob([b.slice(o,o+l)],{type:'image/jpeg'}))}));return URLS.get(k)}
 const IO=new IntersectionObserver(es=>{for(const x of es)if(x.isIntersecting){IO.unobserve(x.target);urlOf(x.target._k,x.target._p).then(u=>x.target.src=u).catch(()=>{})}},{rootMargin:'800px 400px'});
 function pimg(p,kind,a={}){const im=el('img',{alt:'',decoding:'async',...a});im._p=p;im._k=kind;IO.observe(im);return im}
-const S={E:[],P:[],view:'grid',g:'scroll',yb:true,q:'',yr:'',last:'grid'};
+const S={E:[],P:[],view:'grid',yb:true,q:'',yr:'',city:'',last:'grid',mapCity:''};
 const cleanCity=c=>c&&!/unknown/i.test(c)?c:'';
 const place=e=>[e.venue,cleanCity(e.city)].filter(Boolean).join(', ');
 
-function evOK(e){if(S.yr&&e.year!==S.yr)return false;if(!S.q)return true;const h=[e.event,e.venue,e.city,e.year,fmt(e.date),...e.photos.map(p=>p.ph)].join(' ').toLowerCase();return S.q.toLowerCase().split(/\s+/).every(w=>h.includes(w))}
-function phOK(p){if(S.yr&&p.e.year!==S.yr)return false;if(!S.q)return true;const h=[p.e.event,p.e.venue,p.e.city,p.e.year,p.d,p.ph].join(' ').toLowerCase();return S.q.toLowerCase().split(/\s+/).every(w=>h.includes(w))}
+function evOK(e){if(S.yr&&e.year!==S.yr)return false;if(S.city&&!cityKeys(e).includes(S.city))return false;if(!S.q)return true;const h=[e.event,e.venue,e.city,e.year,fmt(e.date),...e.photos.map(p=>p.ph)].join(' ').toLowerCase();return S.q.toLowerCase().split(/\s+/).every(w=>h.includes(w))}
+function phOK(p){if(S.yr&&p.e.year!==S.yr)return false;if(S.city&&!cityKeys(p.e).includes(S.city))return false;if(!S.q)return true;const h=[p.e.event,p.e.venue,p.e.city,p.e.year,p.d,p.ph].join(' ').toLowerCase();return S.q.toLowerCase().split(/\s+/).every(w=>h.includes(w))}
 const evs=()=>S.E.filter(evOK);
 const phs=()=>S.P.filter(phOK);
 
@@ -434,13 +491,13 @@ function route(){
   if(h==='label'||h.startsWith('r-')){closeLB();section('label');S.view='label';renderLabel();const r=h.startsWith('r-')&&REL.find(x=>x.id===h.slice(2));if(r)openRel(r);else closeRel();return}
   closeRel();section('photos');
   if(h.startsWith('e-')){const e=S.E.find(x=>x.id===h.slice(2));if(e){S.view='event';document.body.classList.add('evp');renderEvent(e);window.scrollTo(0,0);return}}
-  S.view=['grid','list','years','flyers'].includes(h)?h:'grid';S.last=S.view;render();
+  S.view=['grid','years','flyers','map'].includes(h)?h:'grid';S.last=S.view;render();
 }
 function render(){
   document.querySelectorAll('.views button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S.view)));
-  $('#gridOpts').hidden=S.view!=='grid';$('#ybWrap').hidden=S.g!=='scroll';
+  closeFilter();paintChips();
   stopCanvas();const m=$('#main');m.textContent='';
-  ({grid:renderGrid,list:renderList,years:renderYears,flyers:renderFlyers})[S.view](m);
+  ({grid:renderGrid,years:renderYears,flyers:renderFlyers,map:renderMap})[S.view](m);
 }
 
 /* ---------- grid: justified rows ---------- */
@@ -455,7 +512,6 @@ function photoBtn(p,h,list,i){
     pimg(p,'ts'),el('span',{class:'cap',text:p.e.event+' · '+fmt(p.e.date)}));
   return b}
 function renderGrid(m){
-  if(S.g==='canvas')return renderCanvas(m);
   const list=phs();if(!list.length){m.append(el('p',{class:'empty',text:'No photos match. Try another word or clear the year.'}));return}
   const W=m.clientWidth-parseFloat(getComputedStyle(m).paddingLeft)-parseFloat(getComputedStyle(m).paddingRight);
   const H=innerWidth<600?120:innerWidth<1100?190:240;
@@ -467,78 +523,71 @@ function renderGrid(m){
   }
 }
 
-/* ---------- grid: infinite canvas ---------- */
-let CV=null;
-function stopCanvas(){if(CV){CV.stop();CV=null}}
-function renderCanvas(m){
-  const wrap=el('div',{class:'cvwrap'});const cv=el('canvas',{'aria-label':'Photo canvas. Drag to explore, arrow keys to move, Enter to open.',tabindex:'0',role:'img'});
-  const tip=el('div',{class:'cvtip',hidden:true});const help=el('div',{class:'cvhelp',text:innerWidth<700?'Drag to explore · tap a photo':'Drag or scroll to explore · click a photo'});
-  wrap.append(cv,tip,help);m.append(wrap);
-  const list=phs();if(!list.length){wrap.append(el('p',{class:'empty',text:'No photos match.'}));return}
-  const ctx=cv.getContext('2d');let dpr=1,vw=0,vh=0;
-  const mobile=innerWidth<700,colW=mobile?130:210,gap=mobile?10:16;
-  // items: photos plus each event's flyer, interleaved
-  const items=[];const seen=new Set();
-  list.forEach((p,i)=>{items.push({k:'p',p,i,w:p.w,h:p.h});if(p.e.flyer&&!seen.has(p.e.id)&&i%3===1){seen.add(p.e.id);items.push({k:'f',e:p.e,w:p.e.flyer.w,h:p.e.flyer.h})}});
-  let cols,WW,HH;
-  function layout(){
-    cols=Math.max(Math.ceil(vw/(colW+gap))+2,7);
-    const ch=new Array(cols).fill(0);
-    items.forEach((it,n)=>{const c=ch.indexOf(Math.min(...ch));const w=colW,h=Math.round(colW*it.h/it.w);it.x=c*(colW+gap)+((n*29)%9);it.y=ch[c]+((n*17)%14);it.dw=w;it.dh=h;ch[c]=it.y+h+gap});
-    WW=cols*(colW+gap);HH=Math.max(...ch)+gap;
-  }
-  function size(){const r=cv.getBoundingClientRect();dpr=Math.min(2,devicePixelRatio||1);vw=r.width;vh=r.height;cv.width=Math.round(vw*dpr);cv.height=Math.round(vh*dpr);layout();draw()}
-  let ox=-60,oy=-40,vx=0,vy=0,drag=false,lx=0,ly=0,moved=0,raf=0,hover=null,dirty=false,alive=true;
-  const imgs=new Map();
-  function img(it){const key=it.k==='p'?it.p.c:'f:'+it.e.id;let im=imgs.get(key);if(!im){im=new Image();im.decoding='async';im.onload=()=>req();imgs.set(key,im);if(it.k==='p')urlOf('ts',it.p).then(u=>im.src=u).catch(()=>{});else im.src=fUrl(it.e.id)}return im}
-  const mod=(a,n)=>((a%n)+n)%n;
-  function* visible(){for(const it of items){const x0=mod(it.x+ox,WW),y0=mod(it.y+oy,HH);for(const x of [x0,x0-WW])for(const y of [y0,y0-HH]){if(x+it.dw<0||x>vw||y+it.dh<0||y>vh)continue;yield[it,x,y]}}}
-  function draw(){dirty=false;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#09080B';ctx.fillRect(0,0,vw,vh);
-    for(const[it,x,y]of visible()){const im=img(it);
-      if(im.complete&&im.naturalWidth){ctx.drawImage(im,x,y,it.dw,it.dh)}else{ctx.fillStyle='#16141A';ctx.fillRect(x,y,it.dw,it.dh)}
-      if(hover===it){ctx.strokeStyle='#FF5BA6';ctx.lineWidth=2;ctx.strokeRect(x+1,y+1,it.dw-2,it.dh-2)}}}
-  function req(){if(!dirty){dirty=true;requestAnimationFrame(()=>alive&&draw())}}
-  function hit(px,py){let best=null;for(const[it,x,y]of visible())if(px>=x&&px<=x+it.dw&&py>=y&&py<=y+it.dh)best=it;return best}
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function tick(){if(drag||(Math.abs(vx)<.15&&Math.abs(vy)<.15)){raf=0;return}ox+=vx;oy+=vy;vx*=.94;vy*=.94;draw();raf=requestAnimationFrame(tick)}
-  function showTip(it,px,py){if(!it){tip.hidden=true;return}const e=it.k==='p'?it.p.e:it.e;tip.textContent='';tip.append(e.event,el('small',{text:[fmt(e.date),place(e),it.k==='f'?'Flyer · open the night':it.p.ph&&!/unknown/i.test(it.p.ph)?'Photo: '+it.p.ph:''].filter(Boolean).join(' · ')}));tip.hidden=false;
-    tip.style.left=Math.min(px+14,vw-270)+'px';tip.style.top=Math.min(py+14,vh-60)+'px'}
-  const pos=ev=>{const r=cv.getBoundingClientRect();return[ev.clientX-r.left,ev.clientY-r.top]};
-  cv.addEventListener('pointerdown',ev=>{drag=true;moved=0;[lx,ly]=[ev.clientX,ev.clientY];vx=vy=0;cv.setPointerCapture(ev.pointerId);cv.classList.add('drag');help.hidden=true});
-  cv.addEventListener('pointermove',ev=>{const[px,py]=pos(ev);
-    if(drag){const dx=ev.clientX-lx,dy=ev.clientY-ly;[lx,ly]=[ev.clientX,ev.clientY];moved+=Math.abs(dx)+Math.abs(dy);ox+=dx;oy+=dy;vx=dx;vy=dy;tip.hidden=true;req();return}
-    if(ev.pointerType==='mouse'){const h=hit(px,py);if(h!==hover){hover=h;cv.classList.toggle('hot',!!h);req()}showTip(h,px,py)}});
-  const up=ev=>{if(!drag)return;drag=false;cv.classList.remove('drag');
-    if(moved<7){const[px,py]=pos(ev);const it=hit(px,py);if(it){if(it.k==='p')openLB(list,it.i);else go('e-'+it.e.id);return}}
-    if(!reduce&&!raf)raf=requestAnimationFrame(tick)};
-  cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',()=>{drag=false;cv.classList.remove('drag')});
-  cv.addEventListener('pointerleave',()=>{hover=null;tip.hidden=true;req()});
-  cv.addEventListener('wheel',ev=>{ev.preventDefault();ox-=ev.deltaX;oy-=ev.deltaY;tip.hidden=true;help.hidden=true;req()},{passive:false});
-  cv.addEventListener('keydown',ev=>{const k={ArrowLeft:[90,0],ArrowRight:[-90,0],ArrowUp:[0,90],ArrowDown:[0,-90]}[ev.key];if(k){ev.preventDefault();ox+=k[0];oy+=k[1];req()}else if(ev.key==='Enter'){const it=hit(vw/2,vh/2);if(it){it.k==='p'?openLB(list,it.i):go('e-'+it.e.id)}}});
-  const ro=new ResizeObserver(()=>size());ro.observe(cv);
-  // gentle drift on load so it reads as alive
-  if(!reduce){vx=-.9;vy=-.4;raf=requestAnimationFrame(tick)}
-  CV={stop(){alive=false;ro.disconnect();cancelAnimationFrame(raf)}};
-}
+/* ---------- canvas removed: stopCanvas kept as a no-op for older call sites ---------- */
+function stopCanvas(){}
 
-/* ---------- list ---------- */
-function renderList(m){
-  const list=evs();if(!list.length){m.append(el('p',{class:'empty',text:'No nights match.'}));return}
-  const peek=el('img',{class:'peek',alt:'',hidden:true});
-  const tb=el('tbody');let cur=null;
-  list.forEach(e=>{
-    if(e.year!==cur){cur=e.year;tb.append(el('tr',{class:'yr'},el('td',{colspan:'6',text:e.year})))}
-    const tr=el('tr',{class:'r',tabindex:'0',onclick:()=>go('e-'+e.id),onkeydown:k=>{if(k.key==='Enter')go('e-'+e.id)}},
-      el('td',{class:'f'},e.flyer?el('img',{src:fUrl(e.id),alt:'',loading:'lazy'}):el('div',{class:'nf'})),
-      el('td',{class:'d',text:fmt(e.date)}),
-      el('td',{class:'e'},e.event,innerWidth<720&&place(e)?el('small',{text:place(e)}):null),
-      el('td',{class:'v c',text:e.venue}),el('td',{class:'c',text:cleanCity(e.city)}),
-      el('td',{class:'n',text:e.n+' photos'}));
-    tr.addEventListener('pointermove',ev=>{if(ev.pointerType!=='mouse')return;const p0=S.P.find(x=>x.c===e.photos[0].c);urlOf('ts',p0).then(u=>{if(!peek.hidden)peek.src=u});peek.hidden=false;peek.style.left=Math.min(ev.clientX+24,innerWidth-240)+'px';peek.style.top=Math.max(10,Math.min(ev.clientY-90,innerHeight-200))+'px'});
-    tr.addEventListener('pointerleave',()=>peek.hidden=true);
-    tb.append(tr)});
-  m.append(el('table',{class:'list'},el('thead',{},el('tr',{},el('th',{}),el('th',{text:'Date'}),el('th',{text:'Night'}),el('th',{class:'v',text:'Venue'}),el('th',{class:'c',text:'City'}),el('th',{style:'text-align:right',text:'Photos'}))),tb),peek);
-}
+/* ---------- cities + map ---------- */
+// x/y are positions on map/us.svg (Albers USA, 975 x 610). Nights with no city aren't on the map until one is added.
+const CITIES=[
+ {k:'newyork',label:'New York',sub:'Brooklyn & Manhattan',x:870.7,y:215.8,cls:'upl',rt:'-3deg'},
+ {k:'miami',label:'Miami',sub:'Miami Music Week & more',x:822.7,y:572.1,cls:'lft',rt:'2deg'},
+ {k:'california',label:'California',sub:'LA, SF & the desert',x:86.9,y:363.2,cls:'rgt',rt:'-2deg'},
+ {k:'midwest',label:'Midwest',sub:'Chicago · Detroit · Cleveland',x:690,y:214,cls:'lft',rt:'3deg'}];
+const CITY_BY_NIGHT={'rvd-output17':['newyork'],'rvd-bristol16':['miami'],'rvd-road2camp22':['midwest'],'rvd-westcoast17':['california']};
+const cityCache=new Map();
+function cityKeys(e){if(cityCache.has(e.id))return cityCache.get(e.id);let k=CITY_BY_NIGHT[e.id];
+  if(!k){const c=(e.city||'').toLowerCase();k=/miami/.test(c)?['miami']:/new york|brooklyn|queens|manhattan/.test(c)?['newyork']:/california|los angeles|san francisco/.test(c)?['california']:/chicago|detroit|cleveland/.test(c)?['midwest']:[]}
+  cityCache.set(e.id,k);return k}
+const cityOf=k=>CITIES.find(c=>c.k===k);
+let MAPSVG=null;
+function renderMap(m){
+  const wrap=el('div',{class:'mapwrap'+(S.mapCity?' sel':'')}),svgHost=el('div',{class:'mapsvg'});wrap.append(svgHost);m.append(wrap);
+  (MAPSVG||(MAPSVG=fetch('map/us.svg').then(r=>r.text()))).then(t=>{svgHost.insertAdjacentHTML('afterbegin',t)}).catch(()=>{});
+  const nights=k=>S.E.filter(e=>cityKeys(e).includes(k)&&evOK(e));
+  const live=CITIES.map(c=>({...c,n:nights(c.k)})).filter(c=>c.n.length);
+  const mx=Math.max(1,...live.map(c=>c.n.length));
+  live.forEach(c=>{const sz=10+12*Math.sqrt(c.n.length/mx);
+    svgHost.append(el('button',{class:'pin '+c.cls,type:'button',style:`left:${c.x/9.75}%;top:${c.y/6.1}%;--rt:${c.rt}`,'aria-pressed':String(S.mapCity===c.k),'aria-label':`${c.label}: ${c.n.length} night${c.n.length>1?'s':''}`,onclick:()=>pickCity(c.k)},
+      el('span',{class:'ring'}),el('span',{class:'dot',style:`width:${sz}px;height:${sz}px`}),el('span',{class:'lab'},c.label,el('small',{text:`${c.n.length} night${c.n.length>1?'s':''}`}))))});
+  m.append(el('div',{class:'citymenu',role:'group','aria-label':'Cities'},live.sort((a,b)=>b.n.length-a.n.length).map(c=>el('button',{type:'button','aria-pressed':String(S.mapCity===c.k),onclick:()=>pickCity(c.k)},c.label,el('sup',{text:String(c.n.length)})))));
+  const off=S.E.filter(e=>!cityKeys(e).length&&evOK(e)).length;
+  if(off)m.append(el('p',{class:'mapnote',text:`${off} more night${off>1?'s':''} aren’t pinned yet because we don’t know the city. Find them in Grid or Years.`}));
+  if(!live.length){m.append(el('p',{class:'empty',text:'No nights match. Clear the filters to see the map.'}));return}
+  const c=S.mapCity&&live.find(x=>x.k===S.mapCity);if(!c)return;
+  const ns=c.n,ph=ns.flatMap(e=>e.photos.map(p=>S.P.find(x=>x.c===p.c))).filter(Boolean),yrs=ns.map(e=>e.year).sort();
+  const host=el('section',{id:'cityview'});
+  host.append(el('div',{class:'cityhead'},el('h2',{text:c.label}),el('p',{text:[c.sub,`${ns.length} night${ns.length>1?'s':''}`,yrs[0]===yrs[yrs.length-1]?yrs[0]:yrs[0]+'–'+yrs[yrs.length-1]].join(' · ')})));
+  host.append(el('div',{class:'flystrip'},ns.map(e=>el('button',{type:'button','aria-label':'Open '+e.event,onclick:()=>go('e-'+e.id)},e.flyer?el('img',{src:fUrl(e.id),alt:'',loading:'lazy'}):pimg(S.P.find(x=>x.c===e.photos[0].c),'ts'),el('span',{class:'cap',text:e.event})))));
+  const W=m.clientWidth-parseFloat(getComputedStyle(m).paddingLeft)-parseFloat(getComputedStyle(m).paddingRight);
+  for(const r of justify(ph,W,innerWidth<600?120:220,6))host.append(el('div',{class:'jrow'},r.items.map(p=>photoBtn(p,r.h,ph,ph.indexOf(p)))));
+  m.append(host)}
+function pickCity(k){S.mapCity=S.mapCity===k?'':k;render();if(S.mapCity){const v=$('#cityview');if(v)v.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'})}}
+
+/* ---------- filter pop-out (photos + label) ---------- */
+function chipRow(opts,cur,set){return el('div',{class:'fch'},opts.map(([v,t])=>el('button',{type:'button','aria-pressed':String(cur===v),onclick:()=>{set(v);openFilter(true)}},t)))}
+function openFilter(keep){const p=$('#fpanel');p.textContent='';const lab=S.sec==='label';
+  let qt;const qi=el('input',{type:'search',placeholder:lab?'Releases, artists, tracks, RVD numbers':'Events, venues, artists, photographers','aria-label':'Search',value:lab?L.q:S.q});
+  qi.addEventListener('input',()=>{clearTimeout(qt);qt=setTimeout(()=>{if(lab){L.q=qi.value.trim();S.labelDraw&&S.labelDraw()}else{S.q=qi.value.trim();render();openFilter(true)}paintChips()},200)});
+  p.append(el('h4',{text:'Search'}),el('label',{class:'fsrch'},qi));
+  if(lab){p.append(el('h4',{text:'Type'}),chipRow([['all','All'],['Compilation','Compilations'],['Album','Albums'],['EP','EPs'],['Single','Singles']],L.type,v=>{L.type=v;S.labelDraw&&S.labelDraw();paintChips()}),
+      el('h4',{text:'Order'}),chipRow([['new','Newest first'],['old','Oldest first']],L.sort,v=>{L.sort=v;S.labelDraw&&S.labelDraw();paintChips()}))}
+  else{const years=[...new Set(S.E.map(e=>e.year))].sort().reverse();
+    p.append(el('h4',{text:'Year'}),chipRow([['','All'],...years.map(y=>[y,y])],S.yr,v=>{S.yr=v;render()}),
+      el('h4',{text:'City'}),chipRow([['','All'],...CITIES.filter(c=>S.E.some(e=>cityKeys(e).includes(c.k))).map(c=>[c.k,c.label])],S.city,v=>{S.city=v;S.mapCity='';render()}));
+    if(S.view==='grid'){const cb=el('input',{type:'checkbox'});cb.checked=S.yb;cb.onchange=()=>{S.yb=cb.checked;render();openFilter(true)};p.append(el('label',{class:'ftog'},cb,'Split the grid by year'))}}
+  p.append(el('div',{class:'fact'},el('button',{class:'pill',type:'button',onclick:()=>{if(lab){L.q='';L.type='all';L.sort='new';S.labelDraw&&S.labelDraw()}else{S.q='';S.yr='';S.city='';render()}openFilter(true);paintChips()}},'Clear all'),el('button',{class:'pill buy',type:'button',onclick:closeFilter},'Done')));
+  if(!$('.fscrim')){const sc=el('div',{class:'fscrim',onclick:closeFilter});document.body.append(sc)}
+  p.hidden=false;$('#fbtn').setAttribute('aria-expanded','true');
+  if(!keep){qi.focus({preventScroll:true});document.addEventListener('keydown',fEsc)}}
+function fEsc(e){if(e.key==='Escape')closeFilter()}
+function closeFilter(){const p=$('#fpanel');if(!p)return;p.hidden=true;$('#fbtn')&&$('#fbtn').setAttribute('aria-expanded','false');document.querySelector('.fscrim')?.remove();document.removeEventListener('keydown',fEsc)}
+function paintChips(){const box=$('#fchips');if(!box)return;box.textContent='';const lab=S.sec==='label',ch=[];
+  if(lab){if(L.q)ch.push([`“${L.q}”`,()=>{L.q=''}]);if(L.type!=='all')ch.push([L.type,()=>{L.type='all'}]);if(L.sort!=='new')ch.push(['Oldest first',()=>{L.sort='new'}])}
+  else{if(S.q)ch.push([`“${S.q}”`,()=>{S.q=''}]);if(S.yr)ch.push([S.yr,()=>{S.yr=''}]);if(S.city)ch.push([cityOf(S.city).label,()=>{S.city=''}])}
+  ch.forEach(([t,f])=>box.append(el('button',{type:'button','aria-label':'Remove filter '+t,onclick:()=>{f();if(lab){S.labelDraw&&S.labelDraw();paintChips()}else render()}},t+'  ×')));
+  box.hidden=!ch.length;const n=$('#fcount');if(n){n.hidden=!ch.length;n.textContent=String(ch.length)}}
+/* tickers move at the same speed everywhere, however long their text */
+function marqSpeed(box){requestAnimationFrame(()=>box.querySelectorAll('span').forEach(sp=>{const w=sp.scrollWidth;if(w)sp.style.animationDuration=(w/80).toFixed(1)+'s'}))}
 
 /* ---------- years ---------- */
 function renderYears(m){
@@ -565,7 +614,7 @@ function renderFlyers(m){
 
 /* ---------- event page ---------- */
 function renderEvent(e){
-  stopCanvas();document.querySelectorAll('.views button').forEach(b=>b.setAttribute('aria-pressed','false'));$('#gridOpts').hidden=true;
+  stopCanvas();document.querySelectorAll('.views button').forEach(b=>b.setAttribute('aria-pressed','false'));closeFilter();$('#fchips').hidden=true;
   const m=$('#main');m.textContent='';
   const credits=[...new Set(e.photos.map(p=>p.ph).filter(x=>x&&!/unknown/i.test(x)))];
   m.append(el('a',{class:'back',href:'#'+S.last,text:'← Back to the archive'}),
@@ -625,9 +674,8 @@ const fmtDay=d=>{const m=(d||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?`${+
 const byLine=r=>r.main+(r.feat?' feat. '+r.feat:'');
 function section(sec){
   document.querySelectorAll('.sect a').forEach(a=>a.setAttribute('aria-current',a.dataset.s===sec?'page':'false'));
-  $('#bar').hidden=sec!=='photos';
+  $('#bar').hidden=!(sec==='photos'||sec==='label');$('#views').hidden=sec!=='photos';S.sec=sec;closeFilter();paintChips();
   $('#tag').textContent={label:'Record label · Brooklyn · since 2022',events:'Upcoming parties · Brooklyn, Miami & beyond',merch:'Merch · shipped from our online store'}[sec]||'Photo archive · Brooklyn, Miami & beyond · since 2013';
-  const st=$('#stats');st.textContent='';if(STATS[sec])st.append(...STATS[sec]());
   document.title={label:'RVDIOVCTIVE Label',events:'RVDIOVCTIVE Events',merch:'RVDIOVCTIVE Merch'}[sec]||'RVDIOVCTIVE Archive';
   paintNext(sec);
   const up=upcoming();
@@ -635,7 +683,7 @@ function section(sec){
     events:up.length?up.map(e=>{const p=evParts(e);return `${p.dow} ${p.day} ${p.mon} · ${e.title} · ${e.city}`}).join(' ✦ ')+' ✦ ':'Nothing on the calendar yet · new dates hit Instagram first · ',
     label:REL.slice().reverse().slice(0,14).map(r=>`${r.cat} ${r.title}`).join(' ✦ ')+' ✦ ',
     merch:MERCH.map(m=>m.name).join(' ✦ ')+' ✦ shipped from our online store ✦ '}[sec]||'';
-  const mq=$('#smarq');if(mq&&mt){mq.querySelectorAll('span').forEach(s=>s.textContent=mt.repeat(3))}
+  const mq=$('#smarq');if(mq&&mt){mq.querySelectorAll('span').forEach(s=>s.textContent=mt.repeat(3));marqSpeed(mq)}
 }
 STATS.label=()=>{const a=new Set(REL.flatMap(r=>r.artists));const t=REL.reduce((n,r)=>n+r.tracks.length,0);return[el('div',{},el('b',{text:String(REL.length)}),'releases'),el('div',{},el('b',{text:String(t)}),'tracks'),el('div',{},el('b',{text:String(a.size)}),'artists')]};
 const HUES=[['#FF5BA6','#FFC2DD'],['#7C5CFF','#CFC2FF'],['#2EC4B6','#BFF3EE'],['#FFB300','#FFE7A6']];
@@ -655,10 +703,6 @@ function spotifyEl(r){const mm=(r.spotify||'').match(/open\.spotify\.com\/(?:int
   return null}
 function renderLabel(){
   stopCanvas();const m=$('#main');m.textContent='';
-  const q=el('input',{type:'search',id:'lq',placeholder:'Search releases, artists, tracks, RVD numbers','aria-label':'Search releases',value:L.q});
-  q.addEventListener('input',()=>{L.q=q.value.trim();draw()});
-  const seg=(opts,key)=>el('div',{class:'seg',role:'group'},opts.map(([v,t])=>el('button',{type:'button','aria-pressed':String(L[key]===v),onclick:e=>{L[key]=v;e.currentTarget.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===e.currentTarget)));draw()}},t)));
-  m.append(el('div',{class:'lbar'},el('label',{class:'search'},q),seg([['all','All'],['Compilation','Compilations'],['Album','Albums'],['EP','EPs'],['Single','Singles']],'type'),seg([['new','Newest'],['old','Oldest']],'sort')));
   const host=el('div');m.append(host);
   function draw(){host.textContent='';
     const list=REL.filter(relMatch).sort(relSort);
@@ -668,7 +712,7 @@ function renderLabel(){
       host.append(el('div',{class:'relgrid'},g.items.map(r=>el('button',{class:'rel',type:'button','aria-label':`${r.title} by ${byLine(r)}`,onclick:()=>go('r-'+r.id)},
         cover(r),el('div',{class:'t',text:r.title}),el('div',{class:'a',text:byLine(r)}),el('div',{class:'d'},el('span',{text:fmtDay(r.date)}),el('i',{text:r.type}),el('span',{text:r.cat}))))))});
   }
-  draw();
+  S.labelDraw=draw;draw();
 }
 let RM=null;
 function closeRel(){if(!RM)return;RM.box.remove();document.removeEventListener('keydown',RM.key);document.body.style.overflow='';RM=null}
@@ -898,7 +942,7 @@ function homeA3(box){
     if(!reduce){wall.style.setProperty('--wx',((.5-x/r.width)*28).toFixed(1)+'px');wall.style.setProperty('--wy',((.5-y/r.height)*20).toFixed(1)+'px')}});
   const menu=typeMenu(it=>{liqKick(0,18);wall.classList.add('sharp');fill(it.k)},()=>{wall.classList.remove('sharp');fill('flyers')});
   const mq='Wheat-paste the archive · '+fl.length+' flyers · '+S.E.length+' nights · move fast and the type melts · ';
-  wrap.append(wall,el('div',{class:'vig'}),el('div',{class:'glow'}),topRow(),menu,el('div',{class:'ha-marq'},el('span',{text:mq.repeat(3)}),el('span',{text:mq.repeat(3)})));
+  wrap.append(wall,el('div',{class:'vig'}),el('div',{class:'glow'}),topRow(),menu,(()=>{const t=el('div',{class:'ha-marq'},el('span',{text:mq.repeat(3)}),el('span',{text:mq.repeat(3)}));marqSpeed(t);return t})());
   box.append(wrap);
 }
 
@@ -910,14 +954,10 @@ function homeA3(box){
   S.E.sort((a,b)=>b.date.localeCompare(a.date));
   S.P=S.E.flatMap(e=>e.photos.map(p=>({...p,e})));
   const years=[...new Set(S.E.map(e=>e.year))].sort().reverse();
-  years.forEach(y=>$('#yr').append(el('option',{value:y,text:y})));
   STATS.photos=()=>[el('div',{},el('b',{text:String(S.E.length)}),'nights'),el('div',{},el('b',{text:S.P.length.toLocaleString()}),'photos'),el('div',{},el('b',{text:years[years.length-1]+'–'+years[0].slice(2)}),'years')];
   document.querySelectorAll('.views button').forEach(b=>b.onclick=()=>go(b.dataset.v));
-  document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{S.g=b.dataset.g;document.querySelectorAll('[data-g]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));if(S.view==='grid')render()});
-  $('#yb').onchange=e=>{S.yb=e.target.checked;render()};
-  let qt;$('#q').addEventListener('input',e=>{clearTimeout(qt);qt=setTimeout(()=>{S.q=e.target.value.trim();if(S.view==='event')go(S.last);else render()},160)});
-  $('#yr').onchange=e=>{S.yr=e.target.value;if(S.view==='event')go(S.last);else render()};
-  let rt,lw=innerWidth;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(Math.abs(innerWidth-lw)<4)return;lw=innerWidth;if(S.view==='event')route();else if(!(S.view==='grid'&&S.g==='canvas'))render()},180)});
+  $('#fbtn').onclick=()=>$('#fpanel').hidden?openFilter():closeFilter();
+  let rt,lw=innerWidth;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(Math.abs(innerWidth-lw)<4)return;lw=innerWidth;if(S.view==='event')route();else if(S.view!=='map')render()},180)});
   addEventListener('hashchange',()=>{if(!location.hash.startsWith('#e-'))document.title='RVDIOVCTIVE Archive';route()});
   document.querySelector('.word .wm').onclick=()=>go('home');
   liqDefs();mastWall();document.body.append(CGLOW);
