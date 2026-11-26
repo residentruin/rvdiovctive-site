@@ -294,6 +294,7 @@ body.home header.mast,body.home #bar,body.home footer,body.home #main,body.home 
 /* flyer wall */
 .wall{position:absolute;inset:-12% -8%;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;transform:rotate(-4deg);filter:blur(6px) brightness(.42) saturate(.55);transition:filter .45s ease}
 .wall.sharp{filter:blur(0) brightness(.7) saturate(1)}
+@media (max-width:700px){.wall{grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;inset:-10% -14%}.wall .ptile{padding:3px}.wall .ptile::after{height:10px;top:-5px}}
 .ptile{position:relative;aspect-ratio:4/5;background:#d9d2c4;padding:5px;box-shadow:0 6px 16px #0009;transform:rotate(var(--r))}
 .ptile img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .25s}
 .ptile::after{content:"";position:absolute;left:30%;top:-8px;width:40%;height:16px;background:#f2eee680;transform:rotate(var(--t))}
@@ -387,6 +388,7 @@ footer .fword{font:900 clamp(70px,19vw,300px)/.8 var(--display);color:transparen
 footer .frow{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 @media (max-width:700px){header.mast{min-height:0;padding-block:30px 16px}.stats b{font-size:30px}.yt{font-size:21px}.list .yr td{font-size:38px}}
 @media (hover:none){.cglow{display:none}}
+.yearbreak h2.named{font-size:clamp(40px,6.5vw,92px);line-height:.86}.yblock>h2.named{font-size:clamp(52px,9vw,130px)}
 /* loading screen */
 #loader{position:fixed;inset:0;z-index:300;background:#0A090C;color:#F2EEE6;display:grid;place-items:center;overflow:hidden;transition:opacity .7s ease,visibility 0s linear .7s}
 #loader.out{opacity:0;visibility:hidden;pointer-events:none}
@@ -524,7 +526,7 @@ body.evp header.mast{min-height:0;padding-block:26px 14px}body.evp .word{font-si
 /* social links: edit here */
 const LINKS={
   instagram:'https://www.instagram.com/rvdiovctive/',
-  beatport:'https://www.beatport.com/search?q=RVDIOVCTIVE',
+  beatport:'https://www.beatport.com/label/rvdiovctive/101418',
   ra:'https://ra.co/labels/19965'
 };
 const SVGNS='http://www.w3.org/2000/svg';
@@ -542,7 +544,7 @@ const fUrl=id=>'f/'+id+'.jpg';
 /* photos ship as one small pack per event and size (tp/ = grid size, lp/ = large); each photo knows its byte range */
 const PK=new Map(),URLS=new Map();
 function pack(kind,id){const k=kind+id;if(!PK.has(k))PK.set(k,fetch((kind==='ts'?'tp/':'lp/')+id+'.jpg').then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}));return PK.get(k)}
-function urlOf(kind,p){const k=kind+p.c;if(!URLS.has(k))URLS.set(k,pack(kind,p.e.id).then(b=>{const[o,l]=p[kind];return URL.createObjectURL(new Blob([b.slice(o,o+l)],{type:'image/jpeg'}))}));return URLS.get(k)}
+function urlOf(kind,p){const k=kind+p.c;if(!URLS.has(k))URLS.set(k,pack(kind,p.pk||p.e.id).then(b=>{const[o,l]=p[kind];return URL.createObjectURL(new Blob([b.slice(o,o+l)],{type:'image/jpeg'}))}));return URLS.get(k)}
 const IO=new IntersectionObserver(es=>{for(const x of es)if(x.isIntersecting){IO.unobserve(x.target);urlOf(x.target._k,x.target._p).then(u=>x.target.src=u).catch(()=>{})}},{rootMargin:'800px 400px'});
 function pimg(p,kind,a={}){const im=el('img',{alt:'',decoding:'async',...a});im._p=p;im._k=kind;IO.observe(im);return im}
 const S={E:[],P:[],view:'grid',yb:true,q:'',yr:'',city:'',artist:'',last:'grid',mapCity:''};
@@ -596,7 +598,7 @@ function renderGrid(m){
   const groups=S.yb?[...new Set(list.map(p=>p.e.year))].map(y=>({y,items:list.filter(p=>p.e.year===y)})):[{y:null,items:list}];
   let idx=0;
   for(const g of groups){
-    if(g.y){const ne=new Set(g.items.map(p=>p.e.id)).size;m.append(el('div',{class:'yearbreak'},el('h2',{text:g.y}),el('i')))}
+    if(g.y){const ne=new Set(g.items.map(p=>p.e.id)).size;m.append(el('div',{class:'yearbreak'},el('h2',{text:g.y,class:/^\d{4}$/.test(g.y)?null:'named'}),el('i')))}
     for(const r of justify(g.items,W,H,6)){m.append(el('div',{class:'jrow'},r.items.map(p=>photoBtn(p,r.h,list,list.indexOf(p)))))}
   }
 }
@@ -634,7 +636,7 @@ function renderMap(m){
   if(off)m.append(el('p',{class:'mapnote',text:off>1?`${off} more nights aren’t pinned yet because we don’t know the city. Find them in Grid or Years.`:'One more night isn’t pinned yet because we don’t know the city. Find it in Grid or Years.'}));
   if(!live.length){m.append(el('p',{class:'empty',text:'No nights match. Clear the filters to see the map.'}));return}
   const c=S.mapCity&&live.find(x=>x.k===S.mapCity);if(!c)return;
-  const ns=c.n,ph=ns.flatMap(e=>e.photos.map(p=>S.P.find(x=>x.c===p.c))).filter(Boolean),yrs=ns.map(e=>e.year).sort();
+  const ns=c.n,ph=ns.flatMap(e=>e.photos.map(p=>S.P.find(x=>x.c===p.c))).filter(Boolean),yrs=ns.map(e=>e.date.slice(0,4)).filter(y=>/^\d{4}$/.test(y)).sort();
   const host=el('section',{id:'cityview'});
   host.append(el('div',{class:'cityhead'},el('h2',{text:c.label}),el('p',{text:[c.sub,`${ns.length} night${ns.length>1?'s':''}`,yrs[0]===yrs[yrs.length-1]?yrs[0]:yrs[0]+'–'+yrs[yrs.length-1]].join(' · ')})));
   host.append(el('div',{class:'flystrip'},ns.map(e=>el('button',{type:'button','aria-label':'Open '+e.event,onclick:()=>go('e-'+e.id)},e.flyer?el('img',{src:fUrl(e.id),alt:'',loading:'lazy'}):pimg(S.P.find(x=>x.c===e.photos[0].c),'ts'),el('span',{class:'cap',text:e.event})))));
@@ -651,7 +653,7 @@ function openFilter(keep){const p=$('#fpanel');p.textContent='';const lab=S.sec=
   p.append(el('h4',{text:'Search'}),el('label',{class:'fsrch'},qi));
   if(lab){p.append(el('h4',{text:'Type'}),chipRow([['all','All'],['Compilation','Compilations'],['Album','Albums'],['EP','EPs'],['Single','Singles']],L.type,v=>{L.type=v;S.labelDraw&&S.labelDraw();paintChips()}),
       el('h4',{text:'Order'}),chipRow([['new','Newest first'],['old','Oldest first']],L.sort,v=>{L.sort=v;S.labelDraw&&S.labelDraw();paintChips()}))}
-  else{const years=[...new Set(S.E.map(e=>e.year))].sort().reverse();
+  else{const years=[...new Set(S.E.map(e=>e.year))].sort(yearSort);
     p.append(el('h4',{text:'Year'}),chipRow([['','All'],...years.map(y=>[y,y])],S.yr,v=>{S.yr=v;render()}),
       el('h4',{text:'City'}),chipRow([['','All'],...CITIES.filter(c=>S.E.some(e=>cityKeys(e).includes(c.k))).map(c=>[c.k,c.label])],S.city,v=>{S.city=v;S.mapCity='';render()}));
     if(S.view==='grid'){const cb=el('input',{type:'checkbox'});cb.checked=S.yb;cb.onchange=()=>{S.yb=cb.checked;render();openFilter(true)};p.append(el('label',{class:'ftog'},cb,'Split the grid by year'))}}
@@ -673,7 +675,7 @@ function marqSpeed(box){requestAnimationFrame(()=>box.querySelectorAll('span').f
 function renderYears(m){
   const list=evs();if(!list.length){m.append(el('p',{class:'empty',text:'No nights match.'}));return}
   const ys=[...new Set(list.map(e=>e.year))];
-  ys.forEach(y=>{const b=el('section',{class:'yblock'},el('h2',{text:y}));
+  ys.forEach(y=>{const b=el('section',{class:'yblock'},el('h2',{text:y,class:/^\d{4}$/.test(y)?null:'named'}));
     list.filter(e=>e.year===y).forEach(e=>b.append(el('div',{class:'yev',role:'link',tabindex:'0',onclick:()=>go('e-'+e.id),onkeydown:k=>{if(k.key==='Enter')go('e-'+e.id)}},
       e.flyer?el('img',{class:'fl',src:fUrl(e.id),alt:'Flyer',loading:'lazy'}):el('div',{class:'nf',text:'No flyer yet'}),
       el('div',{style:'min-width:0'},el('div',{class:'yt',text:e.event}),el('div',{class:'ym',text:[fmt(e.date),place(e),e.n+' photos'].filter(Boolean).join(' · ')}),
@@ -684,7 +686,7 @@ function renderYears(m){
 /* ---------- past events: every night's flyer, by year (lives on the Events page) ---------- */
 function renderPast(m){
   const list=S.E;const ys=[...new Set(list.map(e=>e.year))];
-  ys.forEach(y=>{const ev=list.filter(e=>e.year===y);m.append(el('div',{class:'yearbreak'},el('h2',{text:y}),el('i')));
+  ys.forEach(y=>{const ev=list.filter(e=>e.year===y);m.append(el('div',{class:'yearbreak'},el('h2',{text:y,class:/^\d{4}$/.test(y)?null:'named'}),el('i')));
     const w=el('div',{class:'fwall'});
     ev.forEach(e=>{const lab=el('span',{class:'lab'},el('b',{text:e.event}),el('br'),[fmt(e.date),cleanCity(e.city)].filter(Boolean).join(' · '));
       const alt=pimg(S.P.find(x=>x.c===e.photos[0].c),'ts',{class:'alt'});
@@ -816,7 +818,7 @@ function renderLabel(){
     const list=REL.filter(relMatch).sort(relSort);
     if(!list.length){host.append(el('p',{class:'empty',text:'No releases match.'}));return}
     const groups=[];list.forEach(r=>{const y=r.date.slice(0,4);let g=groups.find(x=>x.y===y);if(!g)groups.push(g={y,items:[]});g.items.push(r)});
-    groups.forEach(g=>{host.append(el('div',{class:'yearbreak'},el('h2',{text:g.y}),el('span',{text:`${g.items.length} release${g.items.length>1?'s':''}`}),el('i')));
+    groups.forEach(g=>{host.append(el('div',{class:'yearbreak'},el('h2',{text:g.y,class:/^\d{4}$/.test(g.y)?null:'named'}),el('span',{text:`${g.items.length} release${g.items.length>1?'s':''}`}),el('i')));
       host.append(el('div',{class:'relgrid'},g.items.map(r=>el('button',{class:'rel',type:'button','aria-label':`${r.title} by ${byLine(r)}`,onclick:()=>go('r-'+r.id)},
         cover(r),el('div',{class:'t',text:r.title}),el('div',{class:'a',text:byLine(r)}),el('div',{class:'d'},el('span',{text:fmtDay(r.date)}),el('i',{text:r.type}),el('span',{text:r.cat}))))))});
   }
@@ -1018,6 +1020,7 @@ function liqDefs(){
 /* shared liquid driver: one displacement filter (#liq) melts the big words on every page with cursor speed and scroll, then settles */
 const LQ={t:0,c:0,raf:0,t0:performance.now()};
 const RM_=matchMedia('(prefers-reduced-motion: reduce)');
+const yearSort=(a,b)=>{const na=/^\d{4}$/.test(a),nb=/^\d{4}$/.test(b);return na&&nb?b.localeCompare(a):na?-1:nb?1:a.localeCompare(b)};
 function liqRun(){if(!LQ.raf&&!RM_.matches)LQ.raf=requestAnimationFrame(liqTick)}
 function liqTick(){LQ.raf=0;const D=$('#liqD'),T=$('#liqT');if(!D)return;
   LQ.c+=(LQ.t-LQ.c)*.12;LQ.t*=.93;const t=(performance.now()-LQ.t0)/1000;
